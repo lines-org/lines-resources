@@ -1,13 +1,12 @@
-# LineS Portal Documentation
+# LineS Documentation - Portal
 
-- [LineS Portal Documentation](#lines-portal-documentation)
+- [LineS Documentation - Portal](#lines-documentation---portal)
   - [Creating an account](#creating-an-account)
   - [Logging in and out](#logging-in-and-out)
   - [Managing your account](#managing-your-account)
   - [Using the personal dashboard](#using-the-personal-dashboard)
   - [Browse and view available feeds](#browse-and-view-available-feeds)
   - [Read the documentation](#read-the-documentation)
-
 
 ## Creating an account
 
