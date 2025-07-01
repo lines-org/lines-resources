@@ -87,7 +87,6 @@ Create a new GTFS feed with the specified ID.
 - `400 Bad Request`: `feed_id` is empty.
 - `403 Forbidden`: API key is invalid or user is not authorized to create feeds.
 - `409 Conflict`: feed already exists.
-- 
 
 ---
 
