@@ -25,8 +25,8 @@ Here we present a few toolkits that can help you extract data from various sourc
 
 ### Libraries
 
-- **PDF Wrapper** (Python): designed to extract tabled information from PDF files, based on the [PDF Plumber](https://pypi.org/project/pdfplumber) library ([link](https://github.com/lines-org/lines-resources/tree/main/toolkits/python/libraries/pdf_wrapper.py)).
-- **STePP Wrapper** (Python): designed to extract data from geographic databases, in particular the [STePP](https://www.stepp.pt/sigweb/) database ([link](https://github.com/lines-org/lines-resources/tree/main/toolkits/python/libraries/stepp_wrapper.py)).
+- **PDF Wrapper** (Python): designed to extract tabled information from PDF files, based on the [PDF Plumber](https://pypi.org/project/pdfplumber) library ([link](https://github.com/lines-org/lines-resources/blob/main/toolkits/python/libraries/pdf_wrapper.py)).
+- **STePP Wrapper** (Python): designed to extract data from geographic databases, in particular the [STePP](https://www.stepp.pt/sigweb/) database ([link](https://github.com/lines-org/lines-resources/blob/main/toolkits/python/libraries/stepp_wrapper.py)).
 
 ### Models
 
@@ -40,11 +40,11 @@ Learn how to extract a schedule from a PDF file and the location of stops from a
   - Used **PDF Wrapper** and **STePP Wrapper** toolkits to extract the data.
   - Used **GTFS Entities** models to create the GTFS feed.
   - All files available in the repository ([link](https://github.com/lines-org/lines-resources/tree/main/demo/python/from-pdf-to-gtfs)).
-  - Step-by-step instructions in the Jupyter Notebook `src/demo.ipynb` ([link](https://github.com/lines-org/lines-resources/tree/main/demo/python/from-pdf-to-gtfs/main/src/demo.ipynb)).
+  - Step-by-step instructions in the Jupyter Notebook `src/demo.ipynb` ([link](https://github.com/lines-org/lines-resources/blob/main/demo/python/from-pdf-to-gtfs/src/demo.ipynb)).
 
 ## Using the Portal and API
 
 Once you have created your GTFS feed, you can add it to the Portal or API to make it available for use to everyone.
 
-- For the **Portal**, see the [Portal documentation]( /documentation/portal/index.md) to create and upload your feed in ZIP format.
-- For the **API**, see the [API documentation]( /documentation/api/index.md) to create and upload your feed, either in ZIP format or using the entity endpoints.
+- For the **Portal**, see the [Portal documentation](/documentation/portal/index.md) to create and upload your feed in ZIP format.
+- For the **API**, see the [API documentation](/documentation/api/index.md) to create and upload your feed, either in ZIP format or using the entity endpoints.
