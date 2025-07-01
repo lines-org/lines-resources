@@ -102,7 +102,7 @@ If you are the creator or an editor of the feed, you can also:
 
 - **Upload a new version of the feed -** by either draging the GTFS feed in ZIP format into the designated area, or clicking `Select a File` to choose a file from your device.
 
-- **Revert changes -* by clicking on `Revert` next to a commit in the history to revert all the changes introduced by it. Be careful, as this will create a new commit that undoes the changes made in the selected commit!
+- **Revert changes -** by clicking on `Revert` next to a commit in the history to revert all the changes introduced by it. Be careful, as this will create a new commit that undoes the changes made in the selected commit!
 
 ## Read the documentation
 
