@@ -1,12 +1,17 @@
 # LineS Documentation - Portal
 
-- [LineS Documentation - Portal](#lines-documentation---portal)
-  - [Creating an account](#creating-an-account)
-  - [Logging in and out](#logging-in-and-out)
-  - [Managing your account](#managing-your-account)
-  - [Using the personal dashboard](#using-the-personal-dashboard)
-  - [Browse and view available feeds](#browse-and-view-available-feeds)
-  - [Read the documentation](#read-the-documentation)
+- [LineS Documentation - Welcome     ]( /documentation/index.md)
+- [LineS Documentation - Portal      ]( /documentation/portal/index.md)
+  - [Creating an account             ]( /documentation/portal/index.md#creating-an-account)
+  - [Logging in and out              ]( /documentation/portal/index.md#logging-in-and-out)
+  - [Managing your account           ]( /documentation/portal/index.md#managing-your-account)
+  - [Using the personal dashboard    ]( /documentation/portal/index.md#using-the-personal-dashboard)
+  - [Browse and view available feeds ]( /documentation/portal/index.md#browse-and-view-available-feeds)
+  - [Read the documentation          ]( /documentation/portal/index.md#read-the-documentation)
+- [LineS Documentation - API         ]( /documentation/api/index.md)
+- [LineS Documentation - Toolkits    ]( /documentation/toolkits/index.md)
+
+In this section, you will find information on how to use the LineS Portal, which is the web interface for managing your GTFS feeds.
 
 ## Creating an account
 
@@ -16,7 +21,7 @@ You need to create an account in the Portal to be able to manage your feeds.
 - Provide your email and a strong password - these will be your login credentials.
 - You will receive a confirmation email with a link to activate your account. Check your spam folder if you don't see it in your inbox.
 
-> **Note:** you must use the link in the confirmation email to activate your account, only then you will be able to log in to the Portal.
+> You must use the link in the confirmation email to activate your account, only then you will be able to log in to the Portal.
 
 ## Logging in and out
 
@@ -33,7 +38,7 @@ Once you are done, you can log out of the Portal and your session will be termin
 
 You can manage your account settings in the Portal by clicking the `User Icon` (top right corner) and selecting `Account` (dropdown menu).
 
-> **Note:** you must be logged in to access your account page.
+> You must be logged in to access your account page.
 
 On the account page, you can:
 
@@ -60,7 +65,7 @@ On the dashboard page, you can:
   
   A feed from Aveiro Bus could be created as follows: `id:aveiro-bus`, `name:Aveiro Bus` and `description:Buses operated by Aveiro Bus in Aveiro, Portugal`.
 
-  > **Note:** the feed ID **CANNOT** be changed later! It is used to identify the feed in the API.
+  > The feed ID **CANNOT** be changed later! It is used to identify the feed in the API.
 
 - **View your feeds -** all the feeds you have created or are an editor of will be listed on the dashboard. You can see the feed ID, name, description, and the date it was created. You can click on `More Actions` in a feed to go to the page dedicated to that feed (see [Browse and view available feeds](#browse-and-view-available-feeds)).
 
@@ -76,7 +81,7 @@ On the dashboard page, you can:
   - Delete it (on Portal and API).
   - Add other editors to it (on Portal).
 
-  > **Note:** the editor can use its own API key to authenticate requests in the API directed to the feed it is an editor of.
+  > The editor can use its own API key to authenticate requests in the API directed to the feed it is an editor of.
 
 
 ## Browse and view available feeds
@@ -95,9 +100,9 @@ If you click on `More Actions` on a feed, you will be redirected to the feed pag
 
 If you are the creator or an editor of the feed, you can also:
 
-- **Upload a new version of the feed -** only if you are an editor of the feed in question. You can either drag the GTFS feed in ZIP format into the designated area, or click `Select a File` to choose a file from your device.
+- **Upload a new version of the feed -** by either draging the GTFS feed in ZIP format into the designated area, or clicking `Select a File` to choose a file from your device.
 
-- **Revert changes -** only if you are an editor of the feed. You can click on `Revert` next to a commit in the history to revert all the changes introduced by it. Be careful, as this will create a new commit that undoes the changes made in the selected commit!
+- **Revert changes -* by clicking on `Revert` next to a commit in the history to revert all the changes introduced by it. Be careful, as this will create a new commit that undoes the changes made in the selected commit!
 
 ## Read the documentation
 
