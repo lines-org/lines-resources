@@ -7,6 +7,7 @@
   - [Introduction to GTFS                 ]( /documentation/make-a-gtfs-feed/index.md#introduction-to-gtfs)
   - [Toolkits                             ]( /documentation/make-a-gtfs-feed/index.md#toolkits)
   - [Examples                             ]( /documentation/make-a-gtfs-feed/index.md#examples)
+  - [Using the Portal and API             ]( /documentation/make-a-gtfs-feed/index.md#using-the-portal-and-api)
 
 In this section, you will find information on how to create a GTFS feed that can be later used in the LineS Portal and API.
 
@@ -33,8 +34,17 @@ Here we present a few toolkits that can help you extract data from various sourc
 
 ## Examples
 
-- **From PDF to GTFS - Demo for Aveiro Bus Line 11** (Python): learn how to extract a schedule from a PDF file and the location of stops from a geographic database, and create a valid GTFS feed from it. 
+### From PDF to GTFS - Demo for Aveiro Bus Line 11 (Python)
+
+Learn how to extract a schedule from a PDF file and the location of stops from a geographic database, and create a valid GTFS feed from it. 
   - Used **PDF Wrapper** and **STePP Wrapper** toolkits to extract the data.
   - Used **GTFS Entities** models to create the GTFS feed.
   - All files available in the repository ([link](https://github.com/lines-org/lines-resources/tree/main/demo/python/from-pdf-to-gtfs)).
   - Step-by-step instructions in the Jupyter Notebook `src/demo.ipynb` ([link](https://github.com/lines-org/lines-resources/tree/main/demo/python/from-pdf-to-gtfs/main/src/demo.ipynb)).
+
+## Using the Portal and API
+
+Once you have created your GTFS feed, you can add it to the Portal or API to make it available for use to everyone.
+
+- For the **Portal**, see the [Portal documentation]( /documentation/portal/index.md) to create and upload your feed in ZIP format.
+- For the **API**, see the [API documentation]( /documentation/api/index.md) to create and upload your feed, either in ZIP format or using the entity endpoints.

@@ -19,3 +19,4 @@ Welcome to the LineS documentation! This documentation is designed to help you g
   - [Introduction to GTFS                 ]( /documentation/make-a-gtfs-feed/index.md#introduction-to-gtfs)
   - [Toolkits                             ]( /documentation/make-a-gtfs-feed/index.md#toolkits)
   - [Examples                             ]( /documentation/make-a-gtfs-feed/index.md#examples)
+  - [Using the Portal and API             ]( /documentation/make-a-gtfs-feed/index.md#using-the-portal-and-api)
