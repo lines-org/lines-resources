@@ -1,0 +1,6 @@
+geopandas
+ipykernel
+pandas
+pdfplumber
+pymupdf
+rapidfuzz

@@ -1,0 +1,3021 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GTFS Schedule Validation Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8; width=device-width, initial-scale=1"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $(document).ready(function () {
+        $(document).tooltip();
+      });
+    </script>
+    <style>
+    body {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        min-width: 800px;
+        padding: 1em 2em;
+    }
+
+    .error:before {
+        content: "\1F534  ";
+    }
+
+    .warning:before {
+        content: "\1F7E0  ";
+    }
+
+    .info:before {
+        content: "\26AA  ";
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .version-update {
+        font-weight: bold;
+        color: red;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    table caption {
+        text-align: left;
+        margin: 0.5em 0;
+    }
+
+    table th {
+        text-align: left;
+        border-bottom: 2px solid #000;
+        padding: 0.5em;
+        white-space: nowrap;
+    }
+
+    table td {
+        border-bottom: 1px solid #ddd;
+        padding: 0.5em;
+    }
+
+    .desc-content {
+        padding: 0.5em;
+        border-bottom: 5px solid #000;
+        border-top: 5px solid #000;
+    }
+
+    .desc-content h3 {
+        margin-top: 0;
+    }
+
+    .summary {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .summary-row {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .summary-cell {
+        padding: 5px;
+        box-sizing: border-box;
+        flex: 1;
+    }
+
+    .summary h4 {
+        white-space: nowrap;
+    }
+
+    .summary dt,
+    .summary dd {
+        display: inline-block;
+    }
+
+    .summary dd {
+        font-weight: bold;
+        width: 130px;
+        margin-inline-start: 0;
+    }
+
+    .summary ul,
+    .summary ol {
+        padding-left: 20px;
+    }
+
+    .summary li {
+        padding-left: 0px;
+    }
+
+    hr {
+        border: none;
+        border-top: 2px solid #000;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+
+    .spec-feature {
+        background-color: #d4d4d4;
+        padding: 2px 5px;
+        margin-right: 2px;
+        margin-bottom: 2px;
+        text-align: center;
+    }
+
+    .tooltip {
+        text-decoration: none;
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .tooltip .tooltiptext {
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 100%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        max-width: 400px;
+        min-width: 100px;
+        width: max-content;
+        white-space: normal;
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* Responsive behavior */
+    @media (max-width: 767px) {
+        .summary .summary_info,
+        .summary .summary_list {
+            flex-basis: 100%;
+        }
+    }
+
+    table.accordion > tbody > tr.notice td,
+    table.accordion > tbody > tr.view th {
+        cursor: auto;
+    }
+
+    table.accordion > tbody > tr.notice td:first-child,
+    table.accordion > tbody > tr.notice th:first-child {
+        position: relative;
+        padding-left: 20px;
+    }
+
+    table.accordion > tbody > tr.notice td:first-child:before,
+    table.accordion > tbody > tr.notice th:first-child:before {
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        width: 9px;
+        height: 16px;
+        margin-top: -8px;
+        color: #000;
+        content: "+";
+    }
+
+    table.accordion > tbody > tr.notice.open td:first-child:before,
+    table.accordion > tbody > tr.notice.open th:first-child:before {
+        content: "\2013";
+    }
+
+    table.accordion > tbody > tr.notice:hover {
+        background: #ddd;
+    }
+
+    table.accordion > tbody > tr.notice.open {
+        background: #ddd;
+        color: black;
+    }
+
+    table.accordion > tbody > tr.description {
+        display: none;
+    }
+
+    table.accordion > tbody > tr.description.open {
+        display: table-row;
+    }
+
+    #gtfs-features-container > div {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-wrap: wrap;
+    }
+
+    .warning-display {
+        padding: 10px;
+        border: solid 2px orange;
+        border-radius: 11px;
+        width: fit-content;
+        font-weight: bold;
+    }
+</style>
+
+</head>
+<body>
+    <h1>GTFS Schedule Validation Report</h1>
+    <p>This report was generated by the <a href="https://github.com/MobilityData/gtfs-validator">Canonical GTFS Schedule
+        validator</a>,
+        <span>version 6.0.0</span> at <span>2025-02-04T02:03:35+01:00</span>,
+        <br/>
+        for the dataset
+        <span>file:///mnt/c/Users/joaoo/OneDrive%20-%20Universidade%20de%20Aveiro/Dissertation/Development/lines-gtfs-demo/src/../resources/aveiro-bus.gtfs.zip</span><span>. No country code was provided.</span>
+        </br>
+        </p>
+
+    <p>Use this report alongside our <a href="https://gtfs-validator.mobilitydata.org/rules.html">documentation</a>.</p>
+
+    <div>
+        
+    </div>
+
+    
+
+    <h2>Summary</h2>
+
+    <div class="summary">
+        <div class="summary-row">
+            <div class="summary-cell summary_info">
+                <h4>Agencies included</h4>
+                <hr />
+                <ul>
+                    <li>
+                        <span>Aveiro Bus</span>
+                        <ul>
+                            <li><b>website: </b><a href="http://www.aveirobus.pt/">http://www.aveirobus.pt/</a></li>
+                            <li><b>phone number: </b><span >N/A</span></li>
+                            <li><b>email: </b><span >N/A</span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="summary-cell summary_info">
+                <h4>Feed Info</h4>
+                <hr />
+                <dl>
+                    <div>
+                        <div>
+                            <dd >Publisher Name:</dd>
+                            <dt>
+                            
+                                
+                                <span>N/A</span>
+                                
+                            </dt>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <dd >Publisher URL:</dd>
+                            <dt>
+                            
+                                <span>N/A</span>
+                                
+                                
+                            </dt>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <dd >Feed Email:</dd>
+                            <dt>
+                            
+                                
+                                <span>N/A</span>
+                                
+                            </dt>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <dd >Feed Language:</dd>
+                            <dt>
+                            
+                                
+                                <span>N/A</span>
+                                
+                            </dt>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <dd >Service Window:</dd>
+                            <dt>
+                            
+                                
+                                <span>2025-01-01 to 2025-12-31</span>
+                                <span >
+                                     <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                        <span class="tooltiptext" style="transform: translateX(-100%)">The range of service dates covered by the feed, based on trips with an associated service_id in calendar.txt and/or calendar_dates.txt</span>
+                                    </a>
+                                </span>
+                            </dt>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            
+                            
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            
+                            
+                        </div>
+                    </div>
+                </dl>
+            </div>
+            <div class="summary-cell summary_list">
+                <h4>Files included</h4>
+                <hr />
+                <ol>
+                    <li>agency.txt</li>
+                    <li>calendar.txt</li>
+                    <li>calendar_dates.txt</li>
+                    <li>routes.txt</li>
+                    <li>stop_times.txt</li>
+                    <li>stops.txt</li>
+                    <li>trips.txt</li>
+                </ol>
+            </div>
+            <div class="summary-cell summary_list">
+                <h4>Counts</h4>
+                <hr />
+                <ul>
+                    <li><span >Agencies: 1</span></li>
+                    <li><span >Blocks: 0</span></li>
+                    <li><span >Routes: 2</span></li>
+                    <li><span >Shapes: 0</span></li>
+                    <li><span >Stops: 22</span></li>
+                    <li><span >Trips: 24</span></li>
+                </ul>
+            </div>
+            <div class="summary-cell summary_list" id="gtfs-features-container">
+                <h4>
+                    GTFS Features included
+                    <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                        <span class="tooltiptext" style="transform: translateX(-100%)">GTFS features provide a standardized vocabulary to define and describe features that are officially adopted in GTFS.</span>
+                    </a>
+                </h4>
+                <hr />
+                <div>
+                    <span class="spec-feature">
+                        <a href="https://gtfs.org/getting_started/features/base_add-ons/#location-types" target="_blank">Location Types</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h2>Specification Compliance report</h2>
+
+    <h3><span>364</span> notices reported
+        (<span>333</span> errors,
+        <span>31</span> warnings,
+        <span>0</span> infos)
+    </h3>
+
+    <table class="accordion">
+        <thead>
+        <tr>
+            <th>Notice Code</th>
+            <th>Severity</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <span>
+            <span>
+                <tr class="notice">
+                    <td >duplicate_key</td>
+                    <td class="error" >ERROR</td>
+                    <td >171</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >duplicate_key</h3>
+                            <p ><p>Duplicated entity.</p>
+<p>The values of the given key and rows are duplicates.</p>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#duplicate_key-rule">here</a>.
+                            </p>
+                             <p>Only the first 50 of <span>171</span> affected records are displayed below.</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>filename</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The name of the faulty file</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>oldCsvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row of the first occurrence.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>newCsvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row of the other occurrence.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>fieldName1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Composite key&#39;s first field name.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>fieldValue1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Composite key&#39;s first value.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >287</td>
+                                    
+                                            <td >2</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,1&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >288</td>
+                                    
+                                            <td >3</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,2&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >289</td>
+                                    
+                                            <td >4</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,3&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >290</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,4&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >291</td>
+                                    
+                                            <td >6</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,5&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >292</td>
+                                    
+                                            <td >7</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,6&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >293</td>
+                                    
+                                            <td >8</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,7&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >294</td>
+                                    
+                                            <td >9</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,8&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >295</td>
+                                    
+                                            <td >10</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,9&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >296</td>
+                                    
+                                            <td >11</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,10&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >297</td>
+                                    
+                                            <td >12</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,11&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >298</td>
+                                    
+                                            <td >13</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,12&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >299</td>
+                                    
+                                            <td >14</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,13&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >300</td>
+                                    
+                                            <td >15</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,14&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >301</td>
+                                    
+                                            <td >16</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,15&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >302</td>
+                                    
+                                            <td >17</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,16&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >303</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,17&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >304</td>
+                                    
+                                            <td >19</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,18&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >305</td>
+                                    
+                                            <td >20</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_1,19&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >309</td>
+                                    
+                                            <td >21</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,1&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >310</td>
+                                    
+                                            <td >22</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,2&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >311</td>
+                                    
+                                            <td >23</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,3&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >312</td>
+                                    
+                                            <td >24</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,4&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >313</td>
+                                    
+                                            <td >25</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,5&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >314</td>
+                                    
+                                            <td >26</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,6&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >315</td>
+                                    
+                                            <td >27</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,7&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >316</td>
+                                    
+                                            <td >28</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,8&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >317</td>
+                                    
+                                            <td >29</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,9&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >318</td>
+                                    
+                                            <td >30</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,10&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >319</td>
+                                    
+                                            <td >31</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,11&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >320</td>
+                                    
+                                            <td >32</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,12&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >321</td>
+                                    
+                                            <td >33</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,13&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >322</td>
+                                    
+                                            <td >34</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,14&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >323</td>
+                                    
+                                            <td >35</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,15&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >324</td>
+                                    
+                                            <td >36</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,16&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >325</td>
+                                    
+                                            <td >37</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,17&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >326</td>
+                                    
+                                            <td >38</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,18&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >327</td>
+                                    
+                                            <td >39</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_2,19&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >331</td>
+                                    
+                                            <td >40</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,1&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >332</td>
+                                    
+                                            <td >41</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,2&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >333</td>
+                                    
+                                            <td >42</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,3&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >334</td>
+                                    
+                                            <td >43</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,4&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >335</td>
+                                    
+                                            <td >44</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,5&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >336</td>
+                                    
+                                            <td >45</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,6&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >337</td>
+                                    
+                                            <td >46</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,7&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >338</td>
+                                    
+                                            <td >47</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,8&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >339</td>
+                                    
+                                            <td >48</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,9&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >340</td>
+                                    
+                                            <td >49</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,10&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >341</td>
+                                    
+                                            <td >50</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,11&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;stop_times.txt&quot;</td>
+                                    
+                                            <td >342</td>
+                                    
+                                            <td >51</td>
+                                    
+                                            <td >&quot;trip_id,stop_sequence&quot;</td>
+                                    
+                                            <td >&quot;11_U_3,12&quot;</td>
+                                    
+                                    </tr>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span><span>
+                <tr class="notice">
+                    <td >stop_time_with_arrival_before_previous_departure_time</td>
+                    <td class="error" >ERROR</td>
+                    <td >162</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >stop_time_with_arrival_before_previous_departure_time</h3>
+                            <p ><p>Backwards time travel between stops in <code>stop_times.txt</code></p>
+<p>For a given <code>trip_id</code>, the <code>arrival_time</code> of (n+1)-th stoptime in sequence must not precede
+the <code>departure_time</code> of n-th stoptime in sequence in <code>stop_times.txt</code>.</p>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#stop_time_with_arrival_before_previous_departure_time-rule">here</a>.
+                            </p>
+                             <p>Only the first 50 of <span>162</span> affected records are displayed below.</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>csvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the faulty record.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>prevCsvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row of the previous stop time.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>tripId</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The trip_id associated to the faulty record.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>arrivalTime</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Arrival time at the faulty record.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>departureTime</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Departure time at the previous stop time.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >155</td>
+                                    
+                                            <td >463</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:21:00&quot;</td>
+                                    
+                                            <td >&quot;23:20:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >156</td>
+                                    
+                                            <td >464</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:23:00&quot;</td>
+                                    
+                                            <td >&quot;23:21:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >157</td>
+                                    
+                                            <td >465</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:25:00&quot;</td>
+                                    
+                                            <td >&quot;23:22:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >158</td>
+                                    
+                                            <td >466</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:26:00&quot;</td>
+                                    
+                                            <td >&quot;23:23:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >159</td>
+                                    
+                                            <td >467</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:27:20&quot;</td>
+                                    
+                                            <td >&quot;23:24:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >160</td>
+                                    
+                                            <td >468</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:28:40&quot;</td>
+                                    
+                                            <td >&quot;23:25:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >161</td>
+                                    
+                                            <td >469</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:30:00&quot;</td>
+                                    
+                                            <td >&quot;23:27:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >162</td>
+                                    
+                                            <td >470</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:31:30&quot;</td>
+                                    
+                                            <td >&quot;23:27:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >163</td>
+                                    
+                                            <td >471</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:33:00&quot;</td>
+                                    
+                                            <td >&quot;23:28:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >164</td>
+                                    
+                                            <td >472</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:34:30&quot;</td>
+                                    
+                                            <td >&quot;23:28:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >165</td>
+                                    
+                                            <td >473</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:36:00&quot;</td>
+                                    
+                                            <td >&quot;23:29:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >166</td>
+                                    
+                                            <td >474</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:37:45&quot;</td>
+                                    
+                                            <td >&quot;23:31:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >167</td>
+                                    
+                                            <td >475</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:39:30&quot;</td>
+                                    
+                                            <td >&quot;23:34:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >168</td>
+                                    
+                                            <td >476</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:41:15&quot;</td>
+                                    
+                                            <td >&quot;23:36:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >169</td>
+                                    
+                                            <td >477</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:43:00&quot;</td>
+                                    
+                                            <td >&quot;23:38:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >170</td>
+                                    
+                                            <td >478</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:44:40&quot;</td>
+                                    
+                                            <td >&quot;23:40:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >171</td>
+                                    
+                                            <td >479</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:46:20&quot;</td>
+                                    
+                                            <td >&quot;23:41:10&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >172</td>
+                                    
+                                            <td >480</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;12:48:00&quot;</td>
+                                    
+                                            <td >&quot;23:42:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >79</td>
+                                    
+                                            <td >375</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;08:58:00&quot;</td>
+                                    
+                                            <td >&quot;20:30:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >80</td>
+                                    
+                                            <td >376</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:00:00&quot;</td>
+                                    
+                                            <td >&quot;20:31:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >81</td>
+                                    
+                                            <td >377</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:02:00&quot;</td>
+                                    
+                                            <td >&quot;20:32:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >82</td>
+                                    
+                                            <td >378</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:03:00&quot;</td>
+                                    
+                                            <td >&quot;20:33:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >83</td>
+                                    
+                                            <td >379</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:04:20&quot;</td>
+                                    
+                                            <td >&quot;20:34:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >84</td>
+                                    
+                                            <td >380</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:05:40&quot;</td>
+                                    
+                                            <td >&quot;20:35:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >85</td>
+                                    
+                                            <td >381</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:07:00&quot;</td>
+                                    
+                                            <td >&quot;20:37:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >86</td>
+                                    
+                                            <td >382</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:08:30&quot;</td>
+                                    
+                                            <td >&quot;20:37:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >87</td>
+                                    
+                                            <td >383</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:10:00&quot;</td>
+                                    
+                                            <td >&quot;20:38:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >88</td>
+                                    
+                                            <td >384</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:11:30&quot;</td>
+                                    
+                                            <td >&quot;20:38:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >89</td>
+                                    
+                                            <td >385</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:13:00&quot;</td>
+                                    
+                                            <td >&quot;20:39:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >90</td>
+                                    
+                                            <td >386</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:14:45&quot;</td>
+                                    
+                                            <td >&quot;20:41:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >91</td>
+                                    
+                                            <td >387</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:16:30&quot;</td>
+                                    
+                                            <td >&quot;20:44:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >92</td>
+                                    
+                                            <td >388</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:18:15&quot;</td>
+                                    
+                                            <td >&quot;20:46:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >93</td>
+                                    
+                                            <td >389</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:20:00&quot;</td>
+                                    
+                                            <td >&quot;20:48:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >94</td>
+                                    
+                                            <td >390</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:21:40&quot;</td>
+                                    
+                                            <td >&quot;20:50:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >95</td>
+                                    
+                                            <td >391</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:23:20&quot;</td>
+                                    
+                                            <td >&quot;20:51:10&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >96</td>
+                                    
+                                            <td >392</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;09:25:00&quot;</td>
+                                    
+                                            <td >&quot;20:52:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >98</td>
+                                    
+                                            <td >397</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:21:00&quot;</td>
+                                    
+                                            <td >&quot;21:00:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >99</td>
+                                    
+                                            <td >398</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:23:00&quot;</td>
+                                    
+                                            <td >&quot;21:01:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >100</td>
+                                    
+                                            <td >399</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:25:00&quot;</td>
+                                    
+                                            <td >&quot;21:02:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >101</td>
+                                    
+                                            <td >400</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:26:00&quot;</td>
+                                    
+                                            <td >&quot;21:03:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >102</td>
+                                    
+                                            <td >401</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:27:20&quot;</td>
+                                    
+                                            <td >&quot;21:04:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >103</td>
+                                    
+                                            <td >402</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:28:40&quot;</td>
+                                    
+                                            <td >&quot;21:05:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >104</td>
+                                    
+                                            <td >403</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:30:00&quot;</td>
+                                    
+                                            <td >&quot;21:07:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >105</td>
+                                    
+                                            <td >404</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:31:30&quot;</td>
+                                    
+                                            <td >&quot;21:07:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >106</td>
+                                    
+                                            <td >405</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:33:00&quot;</td>
+                                    
+                                            <td >&quot;21:08:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >107</td>
+                                    
+                                            <td >406</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:34:30&quot;</td>
+                                    
+                                            <td >&quot;21:08:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >108</td>
+                                    
+                                            <td >407</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:36:00&quot;</td>
+                                    
+                                            <td >&quot;21:09:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >109</td>
+                                    
+                                            <td >408</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:37:45&quot;</td>
+                                    
+                                            <td >&quot;21:11:30&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >110</td>
+                                    
+                                            <td >409</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:39:30&quot;</td>
+                                    
+                                            <td >&quot;21:14:00&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >111</td>
+                                    
+                                            <td >410</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;09:41:15&quot;</td>
+                                    
+                                            <td >&quot;21:16:00&quot;</td>
+                                    
+                                    </tr>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span>
+        </span><span>
+            <span>
+                <tr class="notice">
+                    <td >duplicate_route_name</td>
+                    <td class="warning" >WARNING</td>
+                    <td >1</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >duplicate_route_name</h3>
+                            <p ><p>Two distinct routes have either the same <code>route_short_name</code>, the same <code>route_long_name</code>, or the same combination of <code>route_short_name</code> and <code>route_long_name</code>.</p>
+<p>All routes of the same <code>route_type</code> with the same <code>agency_id</code> should have unique
+combinations of <code>route_short_name</code> and <code>route_long_name</code>.</p>
+<p>Note that there may be valid cases where routes have the same short and long name, e.g., if
+they serve different areas. However, different directions must be modeled as the same route.</p>
+<p>Example of bad data:</p>
+<table style="table-layout:auto; width:auto;">
+  <tr>
+    <th><code>route_id</code></th>
+    <th><code>route_short_name</code></th>
+    <th><code>route_long_name</code></th>
+  </tr>
+  <tr>
+    <td>route1</td>
+    <td>U1</td>
+    <td>Southern</td>
+  </tr>
+  <tr>
+    <td>route2</td>
+    <td>U1</td>
+    <td>Southern</td>
+  </tr>
+</table>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#duplicate_route_name-rule">here</a>.
+                            </p>
+                             
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>csvRowNumber1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the first occurrence.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>routeId1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The id of the the first occurrence.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>csvRowNumber2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the other occurrence.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>routeId2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The id of the the other occurrence.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>routeShortName</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Common `routes.route_short_name`.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>routeLongName</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Common `routes.route_long_name`.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>routeTypeValue</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Common `routes.route_type`.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>agencyId</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Common `routes.agency_id`.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >2</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >3</td>
+                                    
+                                            <td >&quot;11_DOMINGOS&quot;</td>
+                                    
+                                            <td >&quot;L11&quot;</td>
+                                    
+                                            <td >&quot;AVEIRO ESTAÇÃO | AVEIRO (UA)&quot;</td>
+                                    
+                                            <td >3</td>
+                                    
+                                            <td >&quot;AVEIRO_BUS&quot;</td>
+                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span><span>
+                <tr class="notice">
+                    <td >fast_travel_between_far_stops</td>
+                    <td class="warning" >WARNING</td>
+                    <td >9</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >fast_travel_between_far_stops</h3>
+                            <p ><p>A transit vehicle moves too fast between two far stops.</p>
+<p>Two stops are considered &quot;far&quot; if they are more than 10 km apart. This normally indicates a
+more serious problem than too fast travel between consecutive stops.</p>
+<p>The speed threshold depends on route type and are the same as
+<code>fast_travel_between_consecutive_stops</code>.</p>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#fast_travel_between_far_stops-rule">here</a>.
+                            </p>
+                             
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>tripCsvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the problematic trip.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>tripId</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`trip_id` of the problematic trip.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>routeId</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`route_id` of the problematic trip.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>speedKph</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Travel speed (km/h).</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>distanceKm</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Distance between stops (km).</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>csvRowNumber1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the first stop time.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>stopSequence1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`stop_sequence` of the first stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>stopId1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`stop_id` of the first stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>stopName1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`stop_name` of the first stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>departureTime1</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`departure_time` of the first stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>csvRowNumber2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the second stop time.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>stopSequence2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`stop_sequence` of the second stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>stopId2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`stop_id` of the second stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>stopName2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`stop_name` of the second stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>arrivalTime2</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">`arrival_time` of the second stop.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;11_U_4&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >357</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;19:59:00&quot;</td>
+                                    
+                                            <td >76</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;09:16:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >6</td>
+                                    
+                                            <td >&quot;11_U_5&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >379</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;20:34:00&quot;</td>
+                                    
+                                            <td >95</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;09:23:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >3</td>
+                                    
+                                            <td >&quot;11_U_2&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >313</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;18:24:00&quot;</td>
+                                    
+                                            <td >38</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;08:46:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >10</td>
+                                    
+                                            <td >&quot;11_U_9&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >467</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;23:24:00&quot;</td>
+                                    
+                                            <td >171</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;12:46:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >2</td>
+                                    
+                                            <td >&quot;11_U_1&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >291</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;17:24:00&quot;</td>
+                                    
+                                            <td >19</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;08:21:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >8</td>
+                                    
+                                            <td >&quot;11_U_7&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >423</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;21:34:00&quot;</td>
+                                    
+                                            <td >133</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;10:21:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >9</td>
+                                    
+                                            <td >&quot;11_U_8&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >445</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;22:24:00&quot;</td>
+                                    
+                                            <td >152</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;10:46:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >7</td>
+                                    
+                                            <td >&quot;11_U_6&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >401</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;21:04:00&quot;</td>
+                                    
+                                            <td >114</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;09:46:20&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >4</td>
+                                    
+                                            <td >&quot;11_U_3&quot;</td>
+                                    
+                                            <td >&quot;11_UTEIS&quot;</td>
+                                    
+                                            <td >636.3807399233938</td>
+                                    
+                                            <td >10.606345665389895</td>
+                                    
+                                            <td >335</td>
+                                    
+                                            <td >5</td>
+                                    
+                                            <td >&quot;3449979680681364563&quot;</td>
+                                    
+                                            <td >&quot;Caçadores 10 - Misericórdia&quot;</td>
+                                    
+                                            <td >&quot;19:24:00&quot;</td>
+                                    
+                                            <td >57</td>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;1296326338167383190&quot;</td>
+                                    
+                                            <td >&quot;Av. 5 de Outubro&quot;</td>
+                                    
+                                            <td >&quot;08:51:20&quot;</td>
+                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span><span>
+                <tr class="notice">
+                    <td >missing_recommended_file</td>
+                    <td class="warning" >WARNING</td>
+                    <td >1</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >missing_recommended_file</h3>
+                            <p ><p>A recommended file is missing.</p>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#missing_recommended_file-rule">here</a>.
+                            </p>
+                             
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>filename</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The name of the faulty file.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >&quot;feed_info.txt&quot;</td>
+                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span><span>
+                <tr class="notice">
+                    <td >mixed_case_recommended_field</td>
+                    <td class="warning" >WARNING</td>
+                    <td >2</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >mixed_case_recommended_field</h3>
+                            <p ><p>This field has customer-facing text and should use Mixed Case (should contain upper and lower case letters).</p>
+<p>This field contains customer-facing text and should use Mixed Case (upper and lower case
+letters) to ensure good readability when displayed to riders. Avoid the use of abbreviations
+throughout the feed (e.g. St. for Street) unless a location is called by its abbreviated name
+(e.g. “JFK Airport”). Abbreviations may be problematic for accessibility by screen reader
+software and voice user interfaces.</p>
+<table style="table-layout:auto; width:auto;">
+  <caption>Good examples:</caption>
+  <tr>
+    <th><code>Field Text</code></th>
+    <th><code>Dataset</code></th>
+  </tr>
+  <tr>
+    <td>"Schwerin, Hauptbahnhof"</td>
+    <td><a href="http://vbb.de/vbbgtfs">Verkehrsverbund Berlin-Brandenburg</a></td>
+  </tr>
+   <tr>
+    <td>"Red Hook/Atlantic Basin"</td>
+    <td><a href="http://nycferry.connexionz.net/rtt/public/utility/gtfs.aspx">NYC Ferry</a></td>
+  </tr>
+  <tr>
+    <td>"Campo Grande Norte"</td>
+    <td><a href="https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS">Carris</a></td>
+  </tr>
+</table>
+<table style="table-layout:auto; width:auto;">
+  <caption>Bad examples:</caption>
+  <tr>
+    <th><code>Field Text</code></th>
+  </tr>
+  <tr>
+    <td>"GALLERIA MALL"</td>
+  </tr>
+  <tr>
+    <td>"3427 GG 17"</td>
+  </tr>
+  <tr>
+    <td>"21 Clark Rd Est"</td>
+  </tr>
+</table>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#mixed_case_recommended_field-rule">here</a>.
+                            </p>
+                             
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>filename</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Name of the faulty file.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>fieldName</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Name of the faulty field.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>fieldValue</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">Faulty value.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>csvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the faulty record.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >&quot;routes.txt&quot;</td>
+                                    
+                                            <td >&quot;route_long_name&quot;</td>
+                                    
+                                            <td >&quot;AVEIRO ESTAÇÃO | AVEIRO (UA)&quot;</td>
+                                    
+                                            <td >2</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;routes.txt&quot;</td>
+                                    
+                                            <td >&quot;route_long_name&quot;</td>
+                                    
+                                            <td >&quot;AVEIRO ESTAÇÃO | AVEIRO (UA)&quot;</td>
+                                    
+                                            <td >3</td>
+                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span><span>
+                <tr class="notice">
+                    <td >unusable_trip</td>
+                    <td class="warning" >WARNING</td>
+                    <td >9</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >unusable_trip</h3>
+                            <p ><p>Trips must have more than one stop to be usable.</p>
+<p>A trip must visit more than one stop in stop_times.txt to be usable by passengers for
+boarding and alighting.</p>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#unusable_trip-rule">here</a>.
+                            </p>
+                             
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>csvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the faulty record.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>tripId</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The faulty record&#39;s id.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >17</td>
+                                    
+                                            <td >&quot;11_D_1&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >18</td>
+                                    
+                                            <td >&quot;11_D_2&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >19</td>
+                                    
+                                            <td >&quot;11_D_3&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >20</td>
+                                    
+                                            <td >&quot;11_D_4&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >21</td>
+                                    
+                                            <td >&quot;11_D_5&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >22</td>
+                                    
+                                            <td >&quot;11_D_6&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >23</td>
+                                    
+                                            <td >&quot;11_D_7&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >24</td>
+                                    
+                                            <td >&quot;11_D_8&quot;</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >25</td>
+                                    
+                                            <td >&quot;11_D_9&quot;</td>
+                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span><span>
+                <tr class="notice">
+                    <td >unused_trip</td>
+                    <td class="warning" >WARNING</td>
+                    <td >9</td>
+                </tr>
+                <tr class="description">
+                    <td colspan="4">
+                        <div class="desc-content">
+                            <h3 >unused_trip</h3>
+                            <p ><p>Trip is not be used in <code>stop_times.txt</code></p>
+<p>Trips should be referred to at least once in <code>stop_times.txt</code>.</p>
+</p>
+                            <p> You can see more about this notice <a
+                                    href="https://gtfs-validator.mobilitydata.org/rules.html#unused_trip-rule">here</a>.
+                            </p>
+                             
+                            <table>
+                                <thead>
+                                    <tr>
+                                        
+                                            <th>
+                                               <span>tripId</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The faulty record&#39;s id.</span>
+                                                </a>
+                                            </th>
+                                        
+                                            <th>
+                                               <span>csvRowNumber</span>
+                                                <a href="#" class="tooltip" onclick="event.preventDefault();"><span>(?)</span>
+                                                    <span class="tooltiptext">The row number of the faulty record.</span>
+                                                </a>
+                                            </th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_1&quot;</td>
+                                    
+                                            <td >17</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_2&quot;</td>
+                                    
+                                            <td >18</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_3&quot;</td>
+                                    
+                                            <td >19</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_4&quot;</td>
+                                    
+                                            <td >20</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_5&quot;</td>
+                                    
+                                            <td >21</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_6&quot;</td>
+                                    
+                                            <td >22</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_7&quot;</td>
+                                    
+                                            <td >23</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_8&quot;</td>
+                                    
+                                            <td >24</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                    
+                                            <td >&quot;11_D_9&quot;</td>
+                                    
+                                            <td >25</td>
+                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </span>
+        </span>
+        </tbody>
+    </table>
+    <br>
+    <footer class="footer text-center text-muted mt-5">
+        Made with ♥ by <a href="https://mobilitydata.org/">MobilityData</a>
+    </footer>
+</body>
+    <script>
+        $(function () {
+            $(".accordion tr.notice").on("click", function () {
+                $(this).toggleClass("open").next(".description").toggleClass("open")
+            })
+        });
+    </script>
+
+</html>
+

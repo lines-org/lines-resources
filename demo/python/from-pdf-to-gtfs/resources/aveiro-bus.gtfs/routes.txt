@@ -1,0 +1,3 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_desc,route_url,route_color,route_text_color
+11_UTEIS,AVEIRO_BUS,L11,AVEIRO ESTAÇÃO | AVEIRO (UA),3,DIAS ÚTEIS - exceto agosto* (* Não se realizam no mês de agosto),,,
+11_DOMINGOS,AVEIRO_BUS,L11,AVEIRO ESTAÇÃO | AVEIRO (UA),3,Domingos (Inverno - do início da época escolar até 30 de junho),,,

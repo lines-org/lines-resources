@@ -1,11 +1,11 @@
 # LineS Documentation - API
 
-- [LineS Documentation - Welcome     ]( /documentation/index.md)
-- [LineS Documentation - Portal      ]( /documentation/portal/index.md)
-- [LineS Documentation - API         ]( /documentation/api/index.md)
-  - [Supported GTFS entities         ]( /documentation/api/index.md#supported-gtfs-entities)
-  - [Available Endpoints             ]( /documentation/api/index.md#available-endpoints)
-- [LineS Documentation - Toolkits    ]( /documentation/toolkits/index.md)
+- [LineS Documentation - Welcome          ]( /documentation/index.md)
+- [LineS Documentation - Portal           ]( /documentation/portal/index.md)
+- [LineS Documentation - API              ]( /documentation/api/index.md)
+  - [Supported GTFS entities              ]( /documentation/api/index.md#supported-gtfs-entities)
+  - [Available Endpoints                  ]( /documentation/api/index.md#available-endpoints)
+- [LineS Documentation - Make a GTFS feed ]( /documentation/make-a-gtfs-feed/index.md)
 
 In this section, you will find information on how to use the LineS API, which is the interface for managing your GTFS feeds programmatically.
 

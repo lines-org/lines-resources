@@ -1,15 +1,15 @@
 # LineS Documentation - Portal
 
-- [LineS Documentation - Welcome     ]( /documentation/index.md)
-- [LineS Documentation - Portal      ]( /documentation/portal/index.md)
-  - [Creating an account             ]( /documentation/portal/index.md#creating-an-account)
-  - [Logging in and out              ]( /documentation/portal/index.md#logging-in-and-out)
-  - [Managing your account           ]( /documentation/portal/index.md#managing-your-account)
-  - [Using the personal dashboard    ]( /documentation/portal/index.md#using-the-personal-dashboard)
-  - [Browse and view available feeds ]( /documentation/portal/index.md#browse-and-view-available-feeds)
-  - [Read the documentation          ]( /documentation/portal/index.md#read-the-documentation)
-- [LineS Documentation - API         ]( /documentation/api/index.md)
-- [LineS Documentation - Toolkits    ]( /documentation/toolkits/index.md)
+- [LineS Documentation - Welcome          ]( /documentation/index.md)
+- [LineS Documentation - Portal           ]( /documentation/portal/index.md)
+  - [Creating an account                  ]( /documentation/portal/index.md#creating-an-account)
+  - [Logging in and out                   ]( /documentation/portal/index.md#logging-in-and-out)
+  - [Managing your account                ]( /documentation/portal/index.md#managing-your-account)
+  - [Using the personal dashboard         ]( /documentation/portal/index.md#using-the-personal-dashboard)
+  - [Browse and view available feeds      ]( /documentation/portal/index.md#browse-and-view-available-feeds)
+  - [Read the documentation               ]( /documentation/portal/index.md#read-the-documentation)
+- [LineS Documentation - API              ]( /documentation/api/index.md)
+- [LineS Documentation - Make a GTFS feed ]( /documentation/make-a-gtfs-feed/index.md)
 
 In this section, you will find information on how to use the LineS Portal, which is the web interface for managing your GTFS feeds.
 

@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang
+AVEIRO_BUS,Aveiro Bus,http://www.aveirobus.pt/,Europe/Lisbon,pt
