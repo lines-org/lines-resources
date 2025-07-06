@@ -29,6 +29,20 @@ Here is a table summarizing the supported GTFS entities and their corresponding 
 
 > E.g., to get stop `id:stop-0` from feed `id:feed-0` use `GET /feeds/feed-0/stops/stop-0`.
 
+Finally, here is a table summarizing the supported fields for each GTFS entity:
+
+| API Entity       | Fields                                                                                                                                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agencies`       | `agency_id`, `agency_name`, `agency_url`, `agency_timezone`, `agency_lang` (optional)                                                                                                              |
+| `calendars`      | `service_id`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `start_date`, `end_date`                                                                               |
+| `calendar-dates` | `service_id`, `date`, `exception_type` (1,2)                                                                                                                                                       |
+| `routes`         | `route_id`, `agency_id`, `route_short_name`, `route_long_name`, `route_type` (0-7,11,12), `route_desc` (optional), `route_url` (optional), `route_color` (optional), `route_text_color` (optional) |
+| `stops`          | `stop_id`, `stop_name`, `stop_lat`, `stop_lon`, `location_type` (0-4), `stop_code` (optional), `zone_id` (optional), `stop_url` (optional)                                                         |
+| `stop-times`     | `trip_id`, `arrival_time`, `departure_time`, `stop_id`, `stop_sequence`                                                                                                                            |
+| `trips`          | `route_id`, `service_id`, `trip_id`, `trip_headsign` (optional)                                                                                                                                    |
+
+> For more details about each entity and its fields, please refer to the [GTFS Reference](https://gtfs.org/documentation/schedule/reference/).
+
 ## Available Endpoints
 
 This section will provide a detail description of the available endpoints in the API.
